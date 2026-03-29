@@ -17,11 +17,11 @@ const themeInitScript = `
 export const metadata: Metadata = {
   metadataBase: new URL("https://itsusan558.github.io/good-news-site"),
   title: "Good News Only - いいニュースだけ",
-  description: "日本のいいニュースだけを集めたサイト。AIが選んだポジティブなニュースで一日をスタートしよう。",
+  description: "世界の良いほうだけをみよう。AIが選んだポジティブなニュースで一日をスタート。",
   robots: { index: true, follow: true },
   openGraph: {
     title: "Good News Only - いいニュースだけ",
-    description: "日本のいいニュースだけを集めたサイト",
+    description: "世界の良いほうだけをみよう",
     type: "website",
     locale: "ja_JP",
     siteName: "Good News Only",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Good News Only - いいニュースだけ",
-    description: "日本のいいニュースだけを集めたサイト。AIが選んだポジティブなニュースで一日をスタートしよう。",
+    description: "世界の良いほうだけをみよう。AIが選んだポジティブなニュースで一日をスタート。",
   },
 };
 
@@ -43,7 +43,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <meta name="theme-color" content="#fffef5" />
+        <meta name="theme-color" content="#fdfcf8" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -58,7 +58,7 @@ export default function RootLayout({
               "@type": "WebSite",
               name: "Good News Only",
               url: "https://itsusan558.github.io/good-news-site",
-              description: "日本のいいニュースだけを集めたサイト",
+              description: "世界の良いほうだけをみよう",
               inLanguage: "ja",
             }),
           }}

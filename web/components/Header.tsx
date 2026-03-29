@@ -5,12 +5,12 @@ export default function Header() {
     <header
       className="border-b"
       style={{
-        background: "linear-gradient(to right, var(--color-header-from), var(--color-header-to))",
+        background: "linear-gradient(135deg, var(--color-header-from), var(--color-header-to))",
         borderColor: "var(--color-header-border)",
         transition: "background 0.3s ease, border-color 0.3s ease",
       }}
     >
-      <div className="max-w-6xl mx-auto px-4 py-6 pr-14">
+      <div className="max-w-6xl mx-auto px-5 py-8 sm:py-10 pr-14">
         <Link href="/" className="block">
           <h1
             className="text-2xl sm:text-3xl font-bold tracking-tight"
@@ -19,10 +19,10 @@ export default function Header() {
             Good News Only
           </h1>
           <p
-            className="text-xs sm:text-sm mt-1"
-            style={{ color: "var(--color-amber-600)" }}
+            className="text-sm sm:text-base mt-2 font-light tracking-wide leading-relaxed"
+            style={{ color: "var(--color-text-catchphrase)" }}
           >
-            いいニュースだけ集めました
+            世界の良いほうだけをみよう
           </p>
         </Link>
       </div>

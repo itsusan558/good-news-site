@@ -16,7 +16,7 @@ export default function NewsCard({ article, index = 0 }: NewsCardProps) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${article.title} - ${article.source}（外部サイトで開きます）`}
-      className="block rounded-2xl p-4 sm:p-5 transition-all hover:-translate-y-0.5 animate-fade-in-up news-card"
+      className="block rounded-xl p-5 sm:p-6 transition-all hover:-translate-y-0.5 animate-fade-in-up news-card"
       style={{ "--delay": `${delay}ms` } as React.CSSProperties}
     >
       <div className="flex items-start gap-3">
@@ -35,7 +35,7 @@ export default function NewsCard({ article, index = 0 }: NewsCardProps) {
 
           {article.reason && (
             <p
-              className="text-xs mt-2 inline-block px-2 py-0.5 rounded-full"
+              className="text-xs mt-2.5 inline-block px-2.5 py-1 rounded-full"
               style={{
                 backgroundColor: "var(--color-tag-bg)",
                 color: "var(--color-tag-text)",

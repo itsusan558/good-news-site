@@ -10,14 +10,14 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main id="main-content" className="max-w-6xl mx-auto px-4 py-6">
-        <div className="mb-6">
+      <main id="main-content" className="max-w-6xl mx-auto px-5 py-8">
+        <div className="mb-8">
           <CategoryTabs activeSlug="all" />
         </div>
 
         {data.last_updated && (
           <p
-            className="text-xs mb-4"
+            className="text-xs mb-6"
             style={{ color: "var(--color-text-faint)" }}
           >
             最終更新: {new Date(data.last_updated).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}
@@ -27,14 +27,16 @@ export default function HomePage() {
         <NewsGrid articles={data.articles} />
 
         <footer
-          className="text-center text-xs py-10 mt-10 border-t"
+          className="text-center text-xs py-12 mt-14 border-t"
           style={{
             color: "var(--color-text-faint)",
             borderColor: "var(--color-footer-border)",
           }}
         >
-          <p>Good News Only - AIが選んだいいニュースだけ</p>
-          <p className="mt-1">Powered by Gemini + Google News RSS</p>
+          <p className="font-light tracking-wide">Good News Only</p>
+          <p className="mt-1.5 font-light" style={{ color: "var(--color-text-faintest)" }}>
+            世界の良いほうだけをみよう
+          </p>
         </footer>
       </main>
 

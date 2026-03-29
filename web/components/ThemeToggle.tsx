@@ -24,7 +24,7 @@ function applyTheme(theme: Theme): void {
   if (meta) {
     meta.setAttribute(
       "content",
-      resolved === "dark" ? "#1a1614" : "#fffef5"
+      resolved === "dark" ? "#191715" : "#fdfcf8"
     );
   }
 }

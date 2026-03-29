@@ -41,13 +41,13 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <>
       <Header />
-      <main id="main-content" className="max-w-6xl mx-auto px-4 py-6">
-        <div className="mb-6">
+      <main id="main-content" className="max-w-6xl mx-auto px-5 py-8">
+        <div className="mb-8">
           <CategoryTabs activeSlug={slug} />
         </div>
 
         <h2
-          className="text-xl font-bold mb-4"
+          className="text-lg font-medium mb-6"
           style={{ color: "var(--color-text-secondary)" }}
         >
           {category.emoji} {category.name}のいいニュース
@@ -56,13 +56,16 @@ export default async function CategoryPage({ params }: PageProps) {
         <NewsGrid articles={articles} />
 
         <footer
-          className="text-center text-xs py-10 mt-10 border-t"
+          className="text-center text-xs py-12 mt-14 border-t"
           style={{
             color: "var(--color-text-faint)",
             borderColor: "var(--color-footer-border)",
           }}
         >
-          <p>Good News Only - AIが選んだいいニュースだけ</p>
+          <p className="font-light tracking-wide">Good News Only</p>
+          <p className="mt-1.5 font-light" style={{ color: "var(--color-text-faintest)" }}>
+            世界の良いほうだけをみよう
+          </p>
         </footer>
       </main>
     </>

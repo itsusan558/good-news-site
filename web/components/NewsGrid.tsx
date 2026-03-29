@@ -24,7 +24,7 @@ export default function NewsGrid({ articles }: NewsGridProps) {
     <div
       role="feed"
       aria-live="polite"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
     >
       {articles.map((article, i) => (
         <NewsCard key={article.url} article={article} index={i} />
