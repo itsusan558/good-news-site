@@ -43,10 +43,20 @@ html {
   --color-amber-100: #f8f0da;
   --color-amber-50: #fcf8ee;
 
-  /* Header gradient */
-  --color-header-from: #faf8f2;
-  --color-header-to: #f8f4eb;
+  /* Header */
+  --color-header-bg: rgba(253, 252, 248, 0.85);
   --color-header-border: #efe8d8;
+
+  /* Hero accent */
+  --color-hero-accent: #c49a2a;
+
+  /* Category accent colors */
+  --color-cat-general: #a47d1a;
+  --color-cat-technology: #4a7fb5;
+  --color-cat-science: #7b5ea7;
+  --color-cat-sports: #5a9a6b;
+  --color-cat-entertainment: #c27089;
+  --color-cat-health: #4a9a7a;
 
   /* Card */
   --color-card-bg: #ffffff;
@@ -112,9 +122,17 @@ html {
     --color-amber-100: #382a10;
     --color-amber-50: #261d0c;
 
-    --color-header-from: #201d1a;
-    --color-header-to: #231f1b;
+    --color-header-bg: rgba(25, 23, 21, 0.85);
     --color-header-border: #353026;
+
+    --color-hero-accent: #dab04a;
+
+    --color-cat-general: #dab04a;
+    --color-cat-technology: #6a9fd5;
+    --color-cat-science: #9b7ec7;
+    --color-cat-sports: #7aba8b;
+    --color-cat-entertainment: #e290a9;
+    --color-cat-health: #6aba9a;
 
     --color-card-bg: #222019;
     --color-card-border: #353026;
@@ -170,9 +188,17 @@ html {
   --color-amber-100: #382a10;
   --color-amber-50: #261d0c;
 
-  --color-header-from: #201d1a;
-  --color-header-to: #231f1b;
+  --color-header-bg: rgba(25, 23, 21, 0.85);
   --color-header-border: #353026;
+
+  --color-hero-accent: #dab04a;
+
+  --color-cat-general: #dab04a;
+  --color-cat-technology: #6a9fd5;
+  --color-cat-science: #9b7ec7;
+  --color-cat-sports: #7aba8b;
+  --color-cat-entertainment: #e290a9;
+  --color-cat-health: #6aba9a;
 
   --color-card-bg: #222019;
   --color-card-border: #353026;

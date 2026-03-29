@@ -47,8 +47,12 @@ export default async function CategoryPage({ params }: PageProps) {
         </div>
 
         <h2
-          className="text-lg font-medium mb-6"
-          style={{ color: "var(--color-text-secondary)" }}
+          className="text-xl mb-6"
+          style={{
+            fontFamily: "'Noto Serif JP', serif",
+            fontWeight: 400,
+            color: "var(--color-text-heading)",
+          }}
         >
           {category.emoji} {category.name}のいいニュース
         </h2>
@@ -56,14 +60,22 @@ export default async function CategoryPage({ params }: PageProps) {
         <NewsGrid articles={articles} />
 
         <footer
-          className="text-center text-xs py-12 mt-14 border-t"
-          style={{
-            color: "var(--color-text-faint)",
-            borderColor: "var(--color-footer-border)",
-          }}
+          className="text-center py-14 mt-16 border-t"
+          style={{ borderColor: "var(--color-footer-border)" }}
         >
-          <p className="font-light tracking-wide">Good News Only</p>
-          <p className="mt-1.5 font-light" style={{ color: "var(--color-text-faintest)" }}>
+          <p
+            className="text-sm tracking-wide"
+            style={{
+              fontFamily: "'Noto Serif JP', serif",
+              color: "var(--color-text-faint)",
+            }}
+          >
+            Good News Only
+          </p>
+          <p
+            className="text-xs mt-2 font-light tracking-wider"
+            style={{ color: "var(--color-text-faintest)" }}
+          >
             世界の良いほうだけをみよう
           </p>
         </footer>

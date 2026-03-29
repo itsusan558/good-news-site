@@ -8,7 +8,7 @@ interface NewsCardProps {
 
 export default function NewsCard({ article, index = 0 }: NewsCardProps) {
   const category = getCategoryBySlug(article.category);
-  const delay = Math.min(index * 60, 600);
+  const delay = Math.min(index * 50, 500);
 
   return (
     <a
@@ -16,48 +16,61 @@ export default function NewsCard({ article, index = 0 }: NewsCardProps) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${article.title} - ${article.source}（外部サイトで開きます）`}
-      className="block rounded-xl p-5 sm:p-6 transition-all hover:-translate-y-0.5 animate-fade-in-up news-card"
+      className="block rounded-xl overflow-hidden transition-all hover:-translate-y-0.5 animate-fade-in-up news-card group"
       style={{ "--delay": `${delay}ms` } as React.CSSProperties}
     >
-      <div className="flex items-start gap-3">
+      {/* Category accent bar */}
+      <div
+        className="h-0.5"
+        style={{ backgroundColor: category ? `var(--color-cat-${article.category})` : "var(--color-amber-400)" }}
+      />
+
+      <div className="p-5">
         {category && (
-          <span className="text-2xl flex-shrink-0 mt-0.5">
-            {category.emoji}
-          </span>
-        )}
-        <div className="min-w-0">
-          <h3
-            className="font-medium leading-snug line-clamp-3 text-sm sm:text-base"
-            style={{ color: "var(--color-text-heading)" }}
-          >
-            {article.title}
-          </h3>
-
-          {article.reason && (
-            <p
-              className="text-xs mt-2.5 inline-block px-2.5 py-1 rounded-full"
-              style={{
-                backgroundColor: "var(--color-tag-bg)",
-                color: "var(--color-tag-text)",
-              }}
-            >
-              {article.reason}
-            </p>
-          )}
-
-          <div
-            className="flex items-center gap-3 mt-3 text-xs"
+          <span
+            className="inline-flex items-center gap-1 text-[11px] tracking-wide mb-2.5"
             style={{ color: "var(--color-text-faint)" }}
           >
-            <span>{article.source}</span>
-            {article.date && (
-              <>
-                <span>-</span>
-                <span>{article.date}</span>
-                <span style={{ color: "var(--color-text-faintest)" }}>↗</span>
-              </>
-            )}
-          </div>
+            <span>{category.emoji}</span>
+            <span style={{ letterSpacing: "0.06em" }}>{category.name}</span>
+          </span>
+        )}
+
+        <h3
+          className="leading-relaxed line-clamp-3 text-[15px] group-hover:underline decoration-1 underline-offset-4"
+          style={{
+            fontFamily: "'Noto Serif JP', serif",
+            fontWeight: 400,
+            color: "var(--color-text-heading)",
+            textDecorationColor: "var(--color-text-faintest)",
+          }}
+        >
+          {article.title}
+        </h3>
+
+        {article.reason && (
+          <p
+            className="text-xs mt-3 inline-block px-2.5 py-0.5 rounded"
+            style={{
+              backgroundColor: "var(--color-tag-bg)",
+              color: "var(--color-tag-text)",
+            }}
+          >
+            {article.reason}
+          </p>
+        )}
+
+        <div
+          className="flex items-center gap-2 mt-4 text-[11px]"
+          style={{ color: "var(--color-text-faint)" }}
+        >
+          <span>{article.source}</span>
+          {article.date && (
+            <>
+              <span style={{ color: "var(--color-text-faintest)" }}>/</span>
+              <span>{article.date}</span>
+            </>
+          )}
         </div>
       </div>
     </a>
