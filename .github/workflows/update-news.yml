@@ -1,0 +1,134 @@
+name: Update Good News
+
+on:
+  schedule:
+    - cron: "0 * * * *" # 毎時0分
+  workflow_dispatch: # 手動実行も可能
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pipeline dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Backup existing articles.json
+        id: backup
+        run: |
+          ARTICLES_PATH="web/public/data/articles.json"
+          if [ -f "$ARTICLES_PATH" ]; then
+            cp "$ARTICLES_PATH" "$ARTICLES_PATH.bak"
+            echo "backup_exists=true" >> "$GITHUB_OUTPUT"
+            echo "Backed up articles.json ($(wc -l < "$ARTICLES_PATH") lines)"
+          else
+            echo "backup_exists=false" >> "$GITHUB_OUTPUT"
+            echo "No existing articles.json to back up"
+          fi
+
+      - name: Fetch and classify news
+        working-directory: pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OUTPUT_PATH: ${{ github.workspace }}/web/public/data/articles.json
+        run: python fetch_and_classify.py
+
+      - name: Validate pipeline output
+        id: validate
+        run: |
+          ARTICLES_PATH="web/public/data/articles.json"
+          if [ ! -f "$ARTICLES_PATH" ]; then
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            echo "::error::articles.json does not exist after pipeline run"
+            exit 0
+          fi
+          COUNT=$(python3 -c "
+          import json, sys
+          try:
+              data = json.load(open('$ARTICLES_PATH', encoding='utf-8'))
+              print(len(data.get('articles', [])))
+          except Exception as e:
+              print(0, file=sys.stderr)
+              print(0)
+          ")
+          echo "Article count: $COUNT"
+          if [ "$COUNT" -lt 5 ]; then
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Only $COUNT articles — below threshold of 5"
+          else
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore backup if validation failed
+        if: steps.validate.outputs.valid == 'false' && steps.backup.outputs.backup_exists == 'true'
+        run: |
+          ARTICLES_PATH="web/public/data/articles.json"
+          cp "$ARTICLES_PATH.bak" "$ARTICLES_PATH"
+          echo "Restored articles.json from backup"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm install
+
+      - name: Build static site
+        working-directory: web
+        env:
+          NEXT_PUBLIC_BASE_PATH: /good-news-site
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `Pipeline failure: ${new Date().toISOString().slice(0, 16)}`;
+            const body = [
+              '## Pipeline Failure Report',
+              '',
+              `**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              `**Trigger:** ${context.eventName}`,
+              `**Time:** ${new Date().toISOString()}`,
+              '',
+              'Please check the workflow logs for details.',
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['bug', 'pipeline'],
+            });
