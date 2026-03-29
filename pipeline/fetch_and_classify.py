@@ -1,4 +1,4 @@
-"""メインパイプライン: RSS取得 → 事前フィルタ → Gemini分類 → JSON出力"""
+"""メインパイプライン: RSS取得 → 事前フィルタ → Claude分類 → JSON出力"""
 
 import asyncio
 import json
@@ -104,7 +104,7 @@ def _run_pipeline(output_path: Path) -> None:
         return
 
     # --- Classify ---
-    logger.info("Classifying %d articles with Gemini...", len(filtered))
+    logger.info("Classifying %d articles with Claude...", len(filtered))
     positive = classify_articles(filtered)
     logger.info("Found %d positive articles", len(positive))
 
@@ -142,7 +142,7 @@ def _run_pipeline(output_path: Path) -> None:
     logger.info("=== Pipeline Summary ===")
     logger.info("  Fetched:      %d", len(articles))
     logger.info("  Pre-filtered: %d removed", removed_count)
-    logger.info("  Classified:   %d sent to Gemini", len(filtered))
+    logger.info("  Classified:   %d sent to Claude", len(filtered))
     logger.info("  Positive:     %d", len(positive))
     logger.info("  Final output: %d (after merge with existing)", len(merged))
     for cat, count in sorted(categories.items()):

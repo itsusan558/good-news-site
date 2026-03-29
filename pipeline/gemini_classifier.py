@@ -1,4 +1,4 @@
-"""Gemini API を使ったニュース感情分類"""
+"""Claude API を使ったニュース感情分類"""
 
 import json
 import logging
@@ -6,21 +6,20 @@ import os
 import time
 from dataclasses import asdict
 
-import google.generativeai as genai
+import anthropic
 
 from rss_fetcher import Article
 
 logger = logging.getLogger(__name__)
 
 BATCH_SIZE = 20
-MODEL_NAME = "gemini-2.0-flash"
+MODEL_NAME = "claude-haiku-4-5-20251001"
 RETRY_MAX = 3
 RETRY_DELAY = 2  # base delay in seconds; actual = RETRY_DELAY * 2^attempt
 
-# Rough token estimation: ~2 tokens per Japanese character
-CHARS_PER_TOKEN = 0.5  # 1 char ~ 2 tokens → 0.5 chars per token
-COST_PER_MILLION_INPUT = 0.10   # USD, Gemini 2.0 Flash
-COST_PER_MILLION_OUTPUT = 0.40  # USD, Gemini 2.0 Flash
+# Cost estimation (Haiku 4.5)
+COST_PER_MILLION_INPUT = 0.80   # USD
+COST_PER_MILLION_OUTPUT = 4.00  # USD
 
 SYSTEM_PROMPT = """あなたは日本語ニュースの感情分類器です。
 各ニュースタイトルについて、「いいニュース」かどうかを判定してください。
@@ -44,19 +43,19 @@ SYSTEM_PROMPT = """あなたは日本語ニュースの感情分類器です。
 JSON配列で返してください。各要素は:
 {"index": 0, "positive": true, "reason": "理由を10文字以内で"}
 
-タイトルだけで判断が難しい場合はpositiveをfalseにしてください。"""
+タイトルだけで判断が難しい場合はpositiveをfalseにしてください。
+JSON配列のみを返し、それ以外のテキストは含めないでください。"""
 
 
-def _init_model() -> genai.GenerativeModel:
-    api_key = os.environ.get("GEMINI_API_KEY", "")
+def _init_client() -> anthropic.Anthropic:
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable is required")
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel(MODEL_NAME)
+        raise ValueError("ANTHROPIC_API_KEY environment variable is required")
+    return anthropic.Anthropic(api_key=api_key)
 
 
 def _validate_result(result: dict, batch_size: int) -> bool:
-    """Gemini応答の各要素が必須キーを持つか検証"""
+    """応答の各要素が必須キーを持つか検証"""
     if not isinstance(result, dict):
         return False
     if "index" not in result or "positive" not in result:
@@ -68,7 +67,7 @@ def _validate_result(result: dict, batch_size: int) -> bool:
 
 
 def _classify_batch(
-    model: genai.GenerativeModel,
+    client: anthropic.Anthropic,
     articles: list[Article],
 ) -> list[dict]:
     titles = "\n".join(
@@ -78,19 +77,23 @@ def _classify_batch(
 
     for attempt in range(RETRY_MAX):
         try:
-            response = model.generate_content(
-                [SYSTEM_PROMPT, prompt],
-                generation_config=genai.GenerationConfig(
-                    response_mime_type="application/json",
-                    temperature=0.1,
-                ),
+            response = client.messages.create(
+                model=MODEL_NAME,
+                max_tokens=2048,
+                system=SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
             )
-            text = response.text.strip()
+            text = response.content[0].text.strip()
+            # Extract JSON array from response
+            start = text.find("[")
+            end = text.rfind("]")
+            if start != -1 and end != -1:
+                text = text[start : end + 1]
             results = json.loads(text)
             if not isinstance(results, list):
                 logger.warning("Unexpected response format: %s", text[:200])
             else:
-                # Validate each result and filter out malformed entries
                 valid: list[dict] = []
                 invalid_count = 0
                 for r in results:
@@ -106,8 +109,10 @@ def _classify_batch(
                 return valid
         except json.JSONDecodeError as e:
             logger.warning("JSON parse error (attempt %d): %s", attempt + 1, e)
+        except anthropic.RateLimitError as e:
+            logger.warning("Rate limit (attempt %d): %s", attempt + 1, e)
         except Exception as e:
-            logger.warning("Gemini API error (attempt %d): %s", attempt + 1, e)
+            logger.warning("Claude API error (attempt %d): %s", attempt + 1, e)
 
         if attempt < RETRY_MAX - 1:
             delay = RETRY_DELAY * (2 ** attempt)
@@ -122,22 +127,22 @@ def _estimate_tokens(articles: list[Article]) -> int:
     """記事タイトル群の入力トークン数を概算"""
     total_chars = len(SYSTEM_PROMPT)
     for a in articles:
-        total_chars += len(a.title) + 10  # index prefix overhead
-    return int(total_chars / CHARS_PER_TOKEN)
+        total_chars += len(a.title) + 10
+    # Japanese: ~1.5 tokens per character
+    return int(total_chars * 1.5)
 
 
 def classify_articles(articles: list[Article]) -> list[dict]:
     if not articles:
         return []
 
-    model = _init_model()
+    client = _init_client()
     positive_articles: list[dict] = []
     total_batches = (len(articles) + BATCH_SIZE - 1) // BATCH_SIZE
     failed_batches = 0
 
-    # Token/cost estimation
     est_input_tokens = _estimate_tokens(articles)
-    est_output_tokens = len(articles) * 30  # ~30 tokens per result entry
+    est_output_tokens = len(articles) * 30
     est_cost = (
         est_input_tokens / 1_000_000 * COST_PER_MILLION_INPUT
         + est_output_tokens / 1_000_000 * COST_PER_MILLION_OUTPUT
@@ -157,7 +162,7 @@ def classify_articles(articles: list[Article]) -> list[dict]:
             batch_num, total_batches, i, i + len(batch), len(articles),
         )
 
-        results = _classify_batch(model, batch)
+        results = _classify_batch(client, batch)
 
         if not results:
             failed_batches += 1
@@ -174,9 +179,9 @@ def classify_articles(articles: list[Article]) -> list[dict]:
                 article_dict["reason"] = result.get("reason", "")
                 positive_articles.append(article_dict)
 
-        # Rate limit: 15 RPM on free tier -> 1 request per 4 seconds
+        # Small delay between batches to avoid rate limits
         if i + BATCH_SIZE < len(articles):
-            time.sleep(4)
+            time.sleep(1)
 
     logger.info(
         "Classification complete: %d positive out of %d total (%d/%d batches succeeded)",
