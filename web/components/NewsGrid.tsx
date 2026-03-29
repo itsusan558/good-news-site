@@ -23,19 +23,38 @@ export default function NewsGrid({ articles }: NewsGridProps) {
 
   const [hero, ...rest] = articles;
 
+  // Split remaining articles into 2 columns on desktop
+  const midpoint = Math.ceil(rest.length / 2);
+  const leftCol = rest.slice(0, midpoint);
+  const rightCol = rest.slice(midpoint);
+
   return (
     <div role="feed" aria-live="polite">
       {/* Hero — featured first article */}
-      <div className="mb-6">
-        <HeroCard article={hero} />
-      </div>
+      <HeroCard article={hero} />
 
-      {/* Grid — remaining articles */}
+      {/* 2-column list on desktop, single column on mobile */}
       {rest.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rest.map((article, i) => (
-            <NewsCard key={article.url} article={article} index={i} />
-          ))}
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10">
+          <div>
+            {leftCol.map((article, i) => (
+              <NewsCard key={article.url} article={article} index={i} />
+            ))}
+          </div>
+          <div
+            className="lg:border-l"
+            style={{ borderColor: "var(--color-card-border)" }}
+          >
+            <div className="lg:pl-10">
+              {rightCol.map((article, i) => (
+                <NewsCard
+                  key={article.url}
+                  article={article}
+                  index={i + midpoint}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

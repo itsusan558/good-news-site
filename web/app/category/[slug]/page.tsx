@@ -41,26 +41,28 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <>
       <Header />
-      <main id="main-content" className="max-w-6xl mx-auto px-5 py-8">
-        <div className="mb-8">
-          <CategoryTabs activeSlug={slug} />
+      <main id="main-content" className="max-w-[1100px] mx-auto px-4">
+        <div className="pt-6 pb-4">
+          <h2
+            className="text-lg sm:text-xl"
+            style={{
+              fontFamily: "'Noto Serif JP', serif",
+              fontWeight: 400,
+              color: "var(--color-text-heading)",
+            }}
+          >
+            {category.emoji} {category.name}のいいニュース
+          </h2>
         </div>
 
-        <h2
-          className="text-xl mb-6"
-          style={{
-            fontFamily: "'Noto Serif JP', serif",
-            fontWeight: 400,
-            color: "var(--color-text-heading)",
-          }}
-        >
-          {category.emoji} {category.name}のいいニュース
-        </h2>
+        <div className="mb-4">
+          <CategoryTabs activeSlug={slug} />
+        </div>
 
         <NewsGrid articles={articles} />
 
         <footer
-          className="text-center py-14 mt-16 border-t"
+          className="text-center py-10 mt-10 border-t"
           style={{ borderColor: "var(--color-footer-border)" }}
         >
           <p
@@ -73,7 +75,7 @@ export default async function CategoryPage({ params }: PageProps) {
             Good News Only
           </p>
           <p
-            className="text-xs mt-2 font-light tracking-wider"
+            className="text-xs mt-1.5 font-light tracking-wider"
             style={{ color: "var(--color-text-faintest)" }}
           >
             世界の良いほうだけをみよう

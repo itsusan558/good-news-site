@@ -9,7 +9,8 @@ export default function CategoryTabs({ activeSlug }: CategoryTabsProps) {
   return (
     <nav
       role="tablist"
-      className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide"
+      className="flex gap-0.5 overflow-x-auto pb-1 scrollbar-hide"
+      style={{ borderBottom: "1px solid var(--color-card-border)" }}
     >
       {CATEGORIES.map((cat) => {
         const isActive = cat.slug === activeSlug;
@@ -22,22 +23,21 @@ export default function CategoryTabs({ activeSlug }: CategoryTabsProps) {
             aria-selected={isActive}
             aria-current={isActive ? "page" : undefined}
             className={`
-              flex-shrink-0 px-4 py-2 min-h-[44px] rounded-lg text-sm transition-all inline-flex items-center gap-1.5
+              flex-shrink-0 px-3 py-2 min-h-[36px] text-[13px] transition-colors inline-flex items-center gap-1
               ${isActive ? "font-medium" : "font-light"}
             `}
             style={
               isActive
                 ? {
-                    backgroundColor: "var(--color-card-bg)",
                     color: "var(--color-text-heading)",
-                    boxShadow: "0 1px 3px var(--color-card-shadow)",
+                    borderBottom: "2px solid var(--color-hero-accent)",
                   }
                 : {
                     color: "var(--color-tab-text)",
                   }
             }
           >
-            <span>{cat.emoji}</span>
+            <span className="text-[12px]">{cat.emoji}</span>
             <span>{cat.name}</span>
           </Link>
         );

@@ -11,14 +11,11 @@ export default function HomePage() {
     <>
       <Header />
 
-      {/* Hero section with catchphrase */}
-      <section
-        className="border-b"
-        style={{ borderColor: "var(--color-header-border)" }}
-      >
-        <div className="max-w-6xl mx-auto px-5 py-10 sm:py-14">
+      <main id="main-content" className="max-w-[1100px] mx-auto px-4">
+        {/* Catchphrase — compact */}
+        <div className="pt-6 pb-4">
           <p
-            className="text-2xl sm:text-3xl lg:text-4xl leading-relaxed font-light"
+            className="text-lg sm:text-xl font-light"
             style={{
               fontFamily: "'Noto Serif JP', serif",
               color: "var(--color-text-heading)",
@@ -26,23 +23,16 @@ export default function HomePage() {
           >
             世界の良いほうだけをみよう
           </p>
-          <p
-            className="text-sm mt-3 font-light"
-            style={{ color: "var(--color-text-faint)" }}
-          >
-            AIが選んだポジティブなニュースをお届けします
-          </p>
         </div>
-      </section>
 
-      <main id="main-content" className="max-w-6xl mx-auto px-5 py-8">
-        <div className="mb-8">
+        {/* Category navigation */}
+        <div className="mb-4">
           <CategoryTabs activeSlug="all" />
         </div>
 
         {data.last_updated && (
           <p
-            className="text-[11px] mb-6 tracking-wide"
+            className="text-[11px] mb-3 tracking-wide"
             style={{ color: "var(--color-text-faintest)" }}
           >
             最終更新: {new Date(data.last_updated).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}
@@ -52,10 +42,8 @@ export default function HomePage() {
         <NewsGrid articles={data.articles} />
 
         <footer
-          className="text-center py-14 mt-16 border-t"
-          style={{
-            borderColor: "var(--color-footer-border)",
-          }}
+          className="text-center py-10 mt-10 border-t"
+          style={{ borderColor: "var(--color-footer-border)" }}
         >
           <p
             className="text-sm tracking-wide"
@@ -67,7 +55,7 @@ export default function HomePage() {
             Good News Only
           </p>
           <p
-            className="text-xs mt-2 font-light tracking-wider"
+            className="text-xs mt-1.5 font-light tracking-wider"
             style={{ color: "var(--color-text-faintest)" }}
           >
             世界の良いほうだけをみよう

@@ -287,6 +287,15 @@ body {
   box-shadow: 0 6px 20px var(--color-card-shadow-hover);
 }
 
+/* --- List-item styling — Nikkei-inspired dense layout --- */
+.news-list-item {
+  transition: background-color 0.15s ease;
+}
+
+.news-list-item:hover {
+  background-color: var(--color-amber-50);
+}
+
 /* Accessibility: disable animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
